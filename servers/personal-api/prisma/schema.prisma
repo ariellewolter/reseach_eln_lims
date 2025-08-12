@@ -1,0 +1,41 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id    String @id @default(uuid())
+  email String @unique
+  name  String?
+}
+
+model Project {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  ownerId     String
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  title     String
+  markdown  String
+  userId    String?
+  projectId String?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model TableDoc {
+  id        String   @id @default(uuid())
+  title     String
+  data      String
+  userId    String?
+  projectId String?
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}

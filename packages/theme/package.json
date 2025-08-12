@@ -1,0 +1,6 @@
+{
+  "name": "@theme",
+  "version": "0.1.0",
+  "main": "src/index.css",
+  "type": "module"
+}
