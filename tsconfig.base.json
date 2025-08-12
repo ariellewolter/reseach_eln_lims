@@ -12,11 +12,13 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["packages/shared/*"],
-      "@theme": ["packages/theme/src"],
-      "@ui/*": ["packages/ui/src/*"],
-      "@types/*": ["packages/types/src/*"],
-      "@utils/*": ["packages/utils/src/*"]
+      "@research/types": ["packages/types/src"],
+      "@research/types/*": ["packages/types/src/*"],
+      "@research/ui": ["packages/ui/src"],
+      "@research/ui/*": ["packages/ui/src/*"],
+      "@research/utils": ["packages/utils/src"],
+      "@research/utils/*": ["packages/utils/src/*"],
+      "@research/theme": ["packages/theme/src"]
     }
   }
 }

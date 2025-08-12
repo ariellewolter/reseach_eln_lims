@@ -8,9 +8,15 @@
     "api:lims": "pnpm -C servers/lims-api dev",
     "web:personal": "pnpm --filter @apps/personal dev",
     "web:lims": "pnpm --filter @apps/lims dev",
-    "dev": "run-p -l api:personal api:lims web:personal web:lims"
+    "dev": "run-p -l api:personal api:lims web:personal web:lims",
+    "build": "pnpm -r build",
+    "type-check": "pnpm -r type-check",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r clean"
   },
   "devDependencies": {
-    "npm-run-all": "^4.1.5"
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.5.4"
   }
 }

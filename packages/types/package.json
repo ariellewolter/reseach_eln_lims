@@ -1,6 +1,15 @@
 {
-  "name": "@types/shared",
+  "name": "@research/types",
+  "private": true,
   "version": "0.1.0",
   "type": "module",
-  "main": "src/index.ts"
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
 }

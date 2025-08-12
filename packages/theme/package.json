@@ -1,6 +1,15 @@
 {
-  "name": "@theme",
+  "name": "@research/theme",
+  "private": true,
   "version": "0.1.0",
-  "main": "src/index.css",
-  "type": "module"
+  "type": "module",
+  "main": "./src/index.css",
+  "exports": {
+    ".": "./src/index.css",
+    "./index.css": "./src/index.css"
+  },
+  "scripts": {
+    "build": "echo 'CSS package - no build needed'",
+    "type-check": "echo 'CSS package - no type checking needed'"
+  }
 }

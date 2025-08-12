@@ -3,7 +3,7 @@ import React from 'react';
 interface SidebarItem {
   id: string;
   name: string;
-  type: 'note' | 'table';
+  type: 'note' | 'table' | 'project' | 'chemical' | 'task' | 'lab' | 'user';
 }
 
 interface SidebarProps {
@@ -14,70 +14,71 @@ interface SidebarProps {
 }
 
 export function Sidebar({ items, onCreateNote, onCreateTable, onSelect }: SidebarProps) {
-  return (
-    <div style={{ padding: '16px' }}>
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{ margin: '0 0 12px 0', color: 'var(--text-0)' }}>Documents</h3>
-        {onCreateNote && (
-          <button 
-            onClick={onCreateNote}
-            style={{
-              background: 'var(--accent)',
-              color: 'white',
-              border: 'none',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              marginRight: '8px',
-              fontSize: '14px'
-            }}
-          >
-            + Note
-          </button>
-        )}
-        {onCreateTable && (
-          <button 
-            onClick={onCreateTable}
-            style={{
-              background: 'var(--accent)',
-              color: 'white',
-              border: 'none',
-              padding: '8px 12px',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              fontSize: '14px'
-            }}
-          >
-            + Table
-          </button>
-        )}
-      </div>
-      <div>
+  // Group items by type
+  const notes = items.filter(item => item.type === 'note');
+  const tables = items.filter(item => item.type === 'table');
+  const projects = items.filter(item => item.type === 'project');
+  const chemicals = items.filter(item => item.type === 'chemical');
+  const tasks = items.filter(item => item.type === 'task');
+  const labs = items.filter(item => item.type === 'lab');
+  const users = items.filter(item => item.type === 'user');
+
+  const renderSection = (title: string, items: SidebarItem[], icon: string) => {
+    if (items.length === 0) return null;
+    
+    return (
+      <div className="sidebar-section" key={title}>
+        <h4 className="section-title">
+          <span className="section-icon">{icon}</span>
+          {title} ({items.length})
+        </h4>
         {items.map(item => (
           <div
             key={item.id}
             onClick={() => onSelect(item.id)}
-            style={{
-              padding: '8px 12px',
-              margin: '4px 0',
-              borderRadius: '6px',
-              cursor: 'pointer',
-              background: 'var(--bg-2)',
-              color: 'var(--text-0)',
-              fontSize: '14px'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--accent)';
-              e.currentTarget.style.color = 'white';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'var(--bg-2)';
-              e.currentTarget.style.color = 'var(--text-0)';
-            }}
+            className="sidebar-item"
           >
             {item.name}
           </div>
         ))}
+      </div>
+    );
+  };
+
+  return (
+    <div className="sidebar-container">
+      <div className="sidebar-header">
+        <h3 className="sidebar-title">Research Notebook</h3>
+        <div className="sidebar-actions">
+          {onCreateNote && (
+            <button 
+              onClick={onCreateNote}
+              className="create-btn create-note"
+              title="Create Note"
+            >
+              + Note
+            </button>
+          )}
+          {onCreateTable && (
+            <button 
+              onClick={onCreateTable}
+              className="create-btn create-table"
+              title="Create Table"
+            >
+              + Table
+            </button>
+          )}
+        </div>
+      </div>
+      
+      <div className="sidebar-content">
+        {renderSection('Notes', notes, '📝')}
+        {renderSection('Tables', tables, '📊')}
+        {renderSection('Projects', projects, '📁')}
+        {renderSection('Chemicals', chemicals, '🧪')}
+        {renderSection('Tasks', tasks, '✅')}
+        {renderSection('Labs', labs, '🏢')}
+        {renderSection('Users', users, '👥')}
       </div>
     </div>
   );
