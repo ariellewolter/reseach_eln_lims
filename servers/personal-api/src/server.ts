@@ -10,4 +10,14 @@ app.get('/api/tables', async (_req,res)=>res.json(await prisma.tableDoc.findMany
 app.post('/api/tables', async (req,res)=>res.status(201).json(await prisma.tableDoc.create({ data:{ title:req.body.title ?? 'Table', data: JSON.stringify(req.body.data ?? [['','']]) } })));
 app.put('/api/tables/:id', async (req,res)=>res.json(await prisma.tableDoc.update({ where:{id:req.params.id}, data:{ title:req.body.title, data: JSON.stringify(req.body.data) } })));
 
+// Properties endpoint
+app.put('/api/properties/:documentId', async (req, res) => {
+  try {
+    // For now, just return success - you can implement actual storage later
+    res.json({ success: true, documentId: req.params.documentId });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save properties' });
+  }
+});
+
 app.listen(4001, ()=>console.log('Personal API on http://localhost:4001'));

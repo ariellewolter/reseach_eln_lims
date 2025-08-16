@@ -12,6 +12,7 @@
     "noEmit": true,
     "baseUrl": ".",
     "paths": {
+      "@/*": ["apps/personal/src/*"],
       "@research/types": ["packages/types/src"],
       "@research/types/*": ["packages/types/src/*"],
       "@research/ui": ["packages/ui/src"],

@@ -87,23 +87,39 @@ function App() {
     {
       id: '1',
       title: 'Schedule equipment calibration',
+      description: 'Calibrate all lab equipment according to safety protocols',
       status: 'todo',
-      assigneeId: 'tech1',
-      due: '2024-01-25'
+      priority: 'med',
+      dueDate: '2024-01-25',
+      tags: ['equipment', 'calibration', 'safety'],
+      links: [],
+      createdAt: '2024-01-10T10:00:00Z',
+      updatedAt: '2024-01-10T10:00:00Z'
     },
     {
       id: '2',
       title: 'Update safety protocols',
-      status: 'doing',
-      assigneeId: 'admin1',
-      due: '2024-01-20'
+      description: 'Review and update laboratory safety protocols',
+      status: 'in_progress',
+      priority: 'high',
+      dueDate: '2024-01-20',
+      tags: ['safety', 'protocols', 'compliance'],
+      links: [],
+      createdAt: '2024-01-08T14:00:00Z',
+      updatedAt: '2024-01-10T09:00:00Z'
     },
     {
       id: '3',
       title: 'Chemical inventory audit',
+      description: 'Complete annual chemical inventory audit',
       status: 'done',
-      assigneeId: 'tech2',
-      due: '2024-01-15'
+      priority: 'med',
+      dueDate: '2024-01-15',
+      tags: ['inventory', 'chemicals', 'audit'],
+      links: [],
+      createdAt: '2024-01-05T08:00:00Z',
+      updatedAt: '2024-01-15T16:00:00Z',
+      completedAt: '2024-01-15T16:00:00Z'
     }
   ];
 

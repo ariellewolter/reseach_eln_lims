@@ -1,110 +1,136 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { DualPaneLayout } from '@research/ui';
-import { Note, TableDoc, Project, Chemical, Task } from '@research/types';
+import { Note, TableDoc, Project, Task, Chemical, MINIMAL_PROPERTIES } from '@research/types';
+import PersonalDashboard from './components/PersonalDashboard';
+import Navigation from './components/Navigation';
+import NotesPage from './pages/NotesPage';
+import TasksPage from './pages/TasksPage';
+import CalendarView from './features/calendar/views/CalendarView';
+import DayFocusView from './features/calendar/views/DayFocusView';
+import { GlobalShortcuts } from './components/GlobalShortcuts';
+import { ThemeProvider } from './contexts/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
+import ErrorBoundary from './components/ErrorBoundary';
+
+// Initialize with empty arrays - data will be loaded from storage or API
+const mockNotes: Note[] = [];
+const mockTables: TableDoc[] = [];
+const mockProjects: Project[] = [];
+const mockTasks: Task[] = [];
+const mockChemicals: Chemical[] = [];
 
 function App() {
-  // Mock data for development
-  const mockNotes: Note[] = [
-    {
-      id: '1',
-      title: 'Daily Lab Notes - 2024-01-15',
-      markdown: '# Daily Lab Notes\n\n## Experiments\n- PCR amplification of gene X\n- Results: Successful amplification\n\n## Notes\n- Need to order more primers\n- Check incubator temperature',
-      createdAt: '2024-01-15T09:00:00Z',
-      updatedAt: '2024-01-15T17:30:00Z'
-    },
-    {
-      id: '2',
-      title: 'Protocol: DNA Extraction',
-      markdown: '# DNA Extraction Protocol\n\n## Materials\n- Lysis buffer\n- Proteinase K\n- Phenol-chloroform\n\n## Steps\n1. Add 500μL lysis buffer\n2. Incubate at 56°C for 1 hour\n3. Extract with phenol-chloroform',
-      createdAt: '2024-01-10T10:00:00Z',
-      updatedAt: '2024-01-10T10:00:00Z'
-    }
-  ];
+  const [notes, setNotes] = useState<Note[]>(mockNotes);
+  const [tables, setTables] = useState<TableDoc[]>(mockTables);
+  const [showProperties, setShowProperties] = useState(true);
+  const [propertiesCollapsed, setPropertiesCollapsed] = useState(true);
+  const [activeDocumentId, setActiveDocumentId] = useState('1');
+  const [activeDocumentType, setActiveDocumentType] = useState<'note' | 'table' | 'project' | 'task' | 'inventory'>('note');
+  
+  // Start with minimal properties for the active document
+  const [documentProperties, setDocumentProperties] = useState({
+    documentId: '1',
+    documentType: 'note' as const,
+    properties: MINIMAL_PROPERTIES.map(p => ({
+      propertyId: p.id,
+      value: p.type === 'select' ? (p.options && p.options.length > 0 ? p.options[0] : '') : 
+             p.type === 'number' ? 0 : 
+             p.type === 'date' ? new Date().toISOString().split('T')[0] : 
+             p.type === 'checkbox' ? false : 
+             p.type === 'tags' ? [] : ''
+    })),
+    categories: [],
+    backlinks: [],
+    tags: []
+  });
 
-  const mockTables: TableDoc[] = [
-    {
-      id: '1',
-      title: 'Chemical Inventory',
-      data: [
-        ['Chemical', 'CAS', 'Vendor', 'Quantity', 'Units'],
-        ['Sodium Chloride', '7647-14-5', 'Sigma', '500', 'g'],
-        ['Tris Buffer', '77-86-1', 'Fisher', '100', 'g'],
-        ['EDTA', '60-00-4', 'Sigma', '50', 'g']
-      ],
-      createdAt: '2024-01-01T00:00:00Z',
-      updatedAt: '2024-01-15T00:00:00Z'
-    }
-  ];
+  // Note creation and update handlers
+  const handleCreateNote = (noteData: Omit<Note, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newNote: Note = {
+      ...noteData,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setNotes(prev => [newNote, ...prev]);
+    return newNote.id;
+  };
 
-  const mockProjects: Project[] = [
-    {
-      id: '1',
-      title: 'Gene Expression Study',
-      description: 'Investigating expression patterns of stress response genes',
-      ownerId: 'user1'
-    },
-    {
-      id: '2',
-      title: 'Protein Purification',
-      description: 'Optimizing purification protocol for recombinant proteins',
-      ownerId: 'user1'
-    }
-  ];
+  const handleCreateTable = (tableData: Omit<TableDoc, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newTable: TableDoc = {
+      ...tableData,
+      id: Date.now().toString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    setTables(prev => [newTable, ...prev]);
+    return newTable.id;
+  };
 
-  const mockChemicals: Chemical[] = [
-    {
-      id: '1',
-      name: 'Sodium Chloride',
-      cas: '7647-14-5',
-      vendor: 'Sigma',
-      catalog: 'S7653',
-      units: 'g'
-    },
-    {
-      id: '2',
-      name: 'Tris Buffer',
-      cas: '77-86-1',
-      vendor: 'Fisher',
-      catalog: 'BP152-1',
-      units: 'g'
-    }
-  ];
+  const handleUpdateNote = (noteId: string, updates: Partial<Note>) => {
+    setNotes(prev => prev.map(note => 
+      note.id === noteId 
+        ? { ...note, ...updates, updatedAt: new Date().toISOString() }
+        : note
+    ));
+  };
 
-  const mockTasks: Task[] = [
-    {
-      id: '1',
-      title: 'Order new primers',
-      status: 'todo',
-      due: '2024-01-20'
-    },
-    {
-      id: '2',
-      title: 'Analyze PCR results',
-      status: 'doing',
-      due: '2024-01-16'
-    },
-    {
-      id: '3',
-      title: 'Update lab notebook',
-      status: 'done',
-      due: '2024-01-15'
-    }
-  ];
+  const handlePropertiesChange = (properties: any) => {
+    setDocumentProperties(properties);
+  };
+
+  const handleToggleProperties = () => {
+    setShowProperties(!showProperties);
+  };
+
+  const handlePropertiesCollapsed = () => {
+    setPropertiesCollapsed(!propertiesCollapsed);
+  };
 
   return (
-    <Router>
-      <div className="h-screen bg-background">
-        <DualPaneLayout
-          notes={mockNotes}
-          tables={mockTables}
-          projects={mockProjects}
-          chemicals={mockChemicals}
-          tasks={mockTasks}
-        />
-      </div>
-    </Router>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <BrowserRouter>
+          <div className="h-screen bg-background">
+            <GlobalShortcuts />
+            <Navigation />
+            <Routes>
+              <Route path="/" element={<PersonalDashboard />} />
+              <Route path="/notes" element={<NotesPage />} />
+              <Route path="/tasks" element={<TasksPage />} />
+              <Route path="/calendar" element={<CalendarView />} />
+              <Route path="/day-focus" element={<DayFocusView />} />
+              <Route 
+                path="/workspace" 
+                element={
+                  <DualPaneLayout
+                    notes={notes}
+                    tables={tables}
+                    projects={mockProjects}
+                    tasks={mockTasks}
+                    chemicals={mockChemicals}
+                    showProperties={showProperties}
+                    propertiesCollapsed={propertiesCollapsed}
+                    onToggleProperties={handlePropertiesCollapsed}
+                    activeDocumentId={activeDocumentId}
+                    activeDocumentType={activeDocumentType}
+                    documentProperties={documentProperties}
+                    onPropertiesChange={handlePropertiesChange}
+                    onCreateNote={handleCreateNote}
+                    onCreateTable={handleCreateTable}
+                    onUpdateNote={handleUpdateNote}
+                    isDashboard={false}
+                  />
+                } 
+              />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
 export default App;
+

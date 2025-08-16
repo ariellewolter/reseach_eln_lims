@@ -28,6 +28,9 @@ model Note {
   projectId String?
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+  
+  // Relations to properties
+  properties DocumentProperty[]
 }
 
 model TableDoc {
@@ -38,4 +41,79 @@ model TableDoc {
   projectId String?
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+  
+  // Relations to properties
+  properties DocumentProperty[]
+}
+
+// New models for universal properties system
+
+model PropertyDefinition {
+  id            String   @id @default(uuid())
+  name          String
+  type          String   // PropertyType enum as string
+  options       String?  // JSON string for select options
+  formula       String?  // For formula type
+  relationTo    String?  // For relation type
+  required      Boolean  @default(false)
+  defaultValue  String?  // JSON string
+  description   String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Which document types this property applies to
+  applicableTypes String  // JSON array of document types
+  
+  // Relations
+  documentProperties DocumentProperty[]
+}
+
+model DocumentProperty {
+  id         String @id @default(uuid())
+  documentId String
+  documentType String // 'note', 'table', 'project', etc.
+  propertyId String
+  value      String // JSON string of the property value
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  // Relations
+  propertyDefinition PropertyDefinition @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  
+  // Optional relations to specific document types
+  note     Note?     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tableDoc TableDoc? @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  @@unique([documentId, propertyId])
+}
+
+model DocumentCategory {
+  id         String @id @default(uuid())
+  documentId String
+  documentType String
+  category   String
+  createdAt  DateTime @default(now())
+  
+  @@unique([documentId, category])
+}
+
+model DocumentBacklink {
+  id           String @id @default(uuid())
+  fromDocumentId String
+  toDocumentId   String
+  fromDocumentType String
+  toDocumentType   String
+  createdAt    DateTime @default(now())
+  
+  @@unique([fromDocumentId, toDocumentId])
+}
+
+model DocumentTag {
+  id         String @id @default(uuid())
+  documentId String
+  documentType String
+  tag        String
+  createdAt  DateTime @default(now())
+  
+  @@unique([documentId, tag])
 }
