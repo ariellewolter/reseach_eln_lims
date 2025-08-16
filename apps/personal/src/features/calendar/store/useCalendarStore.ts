@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CalendarEvent, CalendarViewType, TimeBlock } from '@research/types';
+import { idbJSON } from '../../../state/persist.js';
 
 interface CalendarState {
   events: CalendarEvent[];
@@ -341,7 +342,8 @@ export const useCalendarStore = create<CalendarState>()(
       },
     }),
     {
-      name: 'calendar-store',
+      name: 'calendar-v1',
+      storage: idbJSON(),
       partialize: (state) => {
         console.log('Persisting calendar store state:', state);
         return {

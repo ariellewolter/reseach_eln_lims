@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Task, TaskStatus, TaskPriority, TaskFilters, SavedView } from '@research/types';
+import { idbJSON } from '../../../state/persist';
 
 interface TasksState {
   tasks: Task[];
@@ -385,7 +386,8 @@ export const useTasksStore = create<TasksState>()(
       },
     }),
     {
-      name: 'tasks-store',
+      name: 'tasks-v1',
+      storage: idbJSON(),
       partialize: (state) => ({
         tasks: state.tasks,
         savedViews: state.savedViews,

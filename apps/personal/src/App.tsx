@@ -12,6 +12,7 @@ import { GlobalShortcuts } from './components/GlobalShortcuts';
 import { ThemeProvider } from './contexts/ThemeContext';
 import ThemeToggle from './components/ThemeToggle';
 import ErrorBoundary from './components/ErrorBoundary';
+import DebugStrip from './components/DebugStrip';
 
 // Initialize with empty arrays - data will be loaded from storage or API
 const mockNotes: Note[] = [];
@@ -125,6 +126,7 @@ function App() {
                 } 
               />
             </Routes>
+            <DebugStrip />
           </div>
         </BrowserRouter>
       </ThemeProvider>
